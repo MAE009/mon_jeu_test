@@ -1,20 +1,28 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from game_logic import start_game, process_move
 from database import save_score, get_scores
 import os
 
-app = Flask(__name__)
-CORS(app)  # Permet d'appeler l'API depuis le navigateur
+app = Flask(__name__, static_folder='static')
+CORS(app)
 
-# Lancer une nouvelle partie
+# Servir les fichiers statiques (HTML, CSS, JS)
+@app.route('/')
+def serve_index():
+    return send_from_directory('static', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('static', path)
+
+# API Routes
 @app.route("/api/start", methods=["POST"])
 def api_start():
     player_name = request.json.get("player")
     game_data = start_game(player_name)
     return jsonify(game_data)
 
-# Traiter un mouvement du joueur
 @app.route("/api/move", methods=["POST"])
 def api_move():
     move = request.json.get("move")
@@ -22,7 +30,6 @@ def api_move():
     result = process_move(player, move)
     return jsonify(result)
 
-# Récupérer les scores
 @app.route("/api/scores", methods=["GET"])
 def api_scores():
     scores = get_scores()
