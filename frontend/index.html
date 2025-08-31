@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Jeu</title>
+    <title>🎮 Mon Jeu Navigateur</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🎮 Bienvenue dans le Jeu !</h1>
+        <h1>🎮 Jeu de Déplacement</h1>
         
         <div class="player-section">
             <input id="player" placeholder="Votre nom" type="text">
-            <button onclick="startGame()">Commencer une partie</button>
+            <button onclick="startGame()">Commencer</button>
         </div>
 
-        <div id="game" class="game-container" style="display: none;">
+        <div id="game" class="game-container">
             <h2>Partie en cours</h2>
             <div class="score">Score: <span id="score">0</span></div>
             
@@ -26,7 +26,10 @@
                 <button onclick="makeMove('droite')">➡️ Droite</button>
             </div>
 
-            <button onclick="getScores()">Voir les scores</button>
+            <div class="actions">
+                <button onclick="getScores()">🏆 Voir les scores</button>
+                <button onclick="resetGame()">🔄 Recommencer</button>
+            </div>
         </div>
 
         <div id="scores" class="scores-container"></div>
@@ -34,4 +37,4 @@
 
     <script src="script.js"></script>
 </body>
-    </html>
+                                </html>
