@@ -1,4 +1,3 @@
-# Exemple simple de logique de jeu
 from database import save_score
 
 games = {}
