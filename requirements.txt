@@ -1,4 +1,3 @@
---upgrade pip
 Flask==2.3.2
 flask-cors==3.0.10      # Pour permettre au frontend d'appeler l'API
 pandas==2.1.0           # Pour manipuler et analyser des données
