@@ -1,8 +1,8 @@
-// Auto-détection de l'URL de l'API
 const API_URL = "https://mon-jeu-test.onrender.com" + "/api";
 
 let currentPlayer = "";
-let currentScore = 0;
+let gameInterval = null;
+let currentBalloonSize = 30;
 
 async function startGame() {
     const playerInput = document.getElementById("player");
@@ -23,8 +23,11 @@ async function startGame() {
         if (!response.ok) throw new Error("Erreur de démarrage");
         
         const data = await response.json();
-        currentScore = 0;
-        updateScore();
+        document.getElementById("game").style.display = "block";
+        document.getElementById("tolerance").textContent = data.tolerance;
+        
+        // Démarrer l'animation du ballon
+        startBalloonAnimation();
         
     } catch (error) {
         console.error("Erreur:", error);
@@ -32,32 +35,79 @@ async function startGame() {
     }
 }
 
-async function makeMove(move) {
-    if (!currentPlayer) {
-        alert("Veuillez d'abord commencer une partie");
-        return;
+function startBalloonAnimation() {
+    currentBalloonSize = 30;
+    updateBalloonSize();
+    
+    if (gameInterval) clearInterval(gameInterval);
+    
+    gameInterval = setInterval(async () => {
+        try {
+            // Simuler le gonflement (le serveur calcule le vrai rayon)
+            currentBalloonSize += 0.5;
+            updateBalloonSize();
+            
+            document.getElementById("rayon").textContent = Math.round(currentBalloonSize);
+            
+        } catch (error) {
+            console.error("Erreur:", error);
+        }
+    }, 100);
+}
+
+function updateBalloonSize() {
+    const balloon = document.getElementById("balloon");
+    balloon.style.width = `${currentBalloonSize}px`;
+    balloon.style.height = `${currentBalloonSize}px`;
+}
+
+async function stopGame() {
+    if (!currentPlayer) return;
+    
+    if (gameInterval) {
+        clearInterval(gameInterval);
+        gameInterval = null;
     }
 
     try {
-        const response = await fetch(`${API_URL}/move`, {
+        const response = await fetch(`${API_URL}/stop`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({player: currentPlayer, move})
+            body: JSON.stringify({player: currentPlayer})
         });
         
-        if (!response.ok) throw new Error("Erreur de mouvement");
+        if (!response.ok) throw new Error("Erreur d'arrêt");
         
         const result = await response.json();
-        currentScore = result.score;
-        updateScore();
+        showResult(result);
         
     } catch (error) {
         console.error("Erreur:", error);
     }
 }
 
-function updateScore() {
-    document.getElementById("score").textContent = currentScore;
+function showResult(result) {
+    const resultDiv = document.getElementById("result");
+    
+    if (result.status === "won") {
+        resultDiv.innerHTML = `
+            <div class="won">🎉 VICTOIRE !</div>
+            <div>Score: ${result.score}/100</div>
+            <div>Rayon d'arrêt: ${result.rayon_arret}px</div>
+            <div>Intervalle cible: [${result.intervalle[0]}, ${result.intervalle[1]}]px</div>
+        `;
+    } else if (result.status === "lost") {
+        resultDiv.innerHTML = `
+            <div class="lost">😞 PERDU !</div>
+            <div>Rayon d'arrêt: ${result.rayon_arret}px</div>
+            <div>Intervalle cible: [${result.intervalle[0]}, ${result.intervalle[1]}]px</div>
+        `;
+    } else if (result.status === "burst") {
+        resultDiv.innerHTML = `
+            <div class="burst">💥 BALLON ÉCLATÉ !</div>
+            <div>Le ballon a dépassé la tolérance maximale</div>
+        `;
+    }
 }
 
 async function getScores() {
@@ -82,20 +132,13 @@ function displayScores(scores) {
         return;
     }
     
-    scores.sort((a, b) => b.score - a.score);
-    
     const ol = document.createElement("ol");
-    scores.forEach(score => {
+    scores.forEach((score, index) => {
         const li = document.createElement("li");
-        li.textContent = `${score.name}: ${score.score} points`;
+        li.innerHTML = `<strong>${score.name}</strong>: ${score.score} points`;
+        if (index < 3) li.style.fontWeight = "bold";
         ol.appendChild(li);
     });
     
     scoresContainer.appendChild(ol);
-}
-
-function resetGame() {
-    currentScore = 0;
-    updateScore();
-    document.getElementById("scores").innerHTML = "";
-}
+            }
