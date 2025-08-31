@@ -1,13 +1,12 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from game_logic import start_game, process_move
-from database import save_score, get_scores
+from game_logic import start_game, stop_game, get_scores
 import os
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
 
-# Servir les fichiers statiques (HTML, CSS, JS)
+# Servir les fichiers statiques
 @app.route('/')
 def serve_index():
     return send_from_directory('static', 'index.html')
@@ -23,11 +22,10 @@ def api_start():
     game_data = start_game(player_name)
     return jsonify(game_data)
 
-@app.route("/api/move", methods=["POST"])
-def api_move():
-    move = request.json.get("move")
+@app.route("/api/stop", methods=["POST"])
+def api_stop():
     player = request.json.get("player")
-    result = process_move(player, move)
+    result = stop_game(player)
     return jsonify(result)
 
 @app.route("/api/scores", methods=["GET"])
