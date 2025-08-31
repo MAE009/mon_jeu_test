@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from game_logic import start_game, process_move
 from database import save_score, get_scores
+import os
 
 app = Flask(__name__)
 CORS(app)  # Permet d'appeler l'API depuis le navigateur
@@ -28,4 +29,5 @@ def api_scores():
     return jsonify(scores)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False)
