@@ -2,15 +2,36 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Jeu</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Bienvenue dans le Jeu !</h1>
-    <input id="player" placeholder="Votre nom">
-    <button onclick="startGame()">Commencer</button>
-    <div id="game"></div>
+    <div class="container">
+        <h1>🎮 Bienvenue dans le Jeu !</h1>
+        
+        <div class="player-section">
+            <input id="player" placeholder="Votre nom" type="text">
+            <button onclick="startGame()">Commencer une partie</button>
+        </div>
+
+        <div id="game" class="game-container" style="display: none;">
+            <h2>Partie en cours</h2>
+            <div class="score">Score: <span id="score">0</span></div>
+            
+            <div class="controls">
+                <button onclick="makeMove('haut')">⬆️ Haut</button>
+                <button onclick="makeMove('bas')">⬇️ Bas</button>
+                <button onclick="makeMove('gauche')">⬅️ Gauche</button>
+                <button onclick="makeMove('droite')">➡️ Droite</button>
+            </div>
+
+            <button onclick="getScores()">Voir les scores</button>
+        </div>
+
+        <div id="scores" class="scores-container"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>
-</html>
+    </html>
