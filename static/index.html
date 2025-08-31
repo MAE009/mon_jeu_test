@@ -3,38 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Mon Jeu Navigateur</title>
+    <title>🎈 Stop Ball Mania</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🎮 Jeu de Déplacement</h1>
+        <h1>🎈 STOP BALL MANIA</h1>
         
         <div class="player-section">
             <input id="player" placeholder="Votre nom" type="text">
             <button onclick="startGame()">Commencer</button>
         </div>
 
-        <div id="game" class="game-container">
+        <div id="game" class="game-container" style="display: none;">
             <h2>Partie en cours</h2>
-            <div class="score">Score: <span id="score">0</span></div>
             
-            <div class="controls">
-                <button onclick="makeMove('haut')">⬆️ Haut</button>
-                <button onclick="makeMove('bas')">⬇️ Bas</button>
-                <button onclick="makeMove('gauche')">⬅️ Gauche</button>
-                <button onclick="makeMove('droite')">➡️ Droite</button>
+            <div class="game-info">
+                <div>Tolérance: <span id="tolerance">0</span></div>
+                <div>Intervalle cible: <span id="intervalle">[0, 0]</span></div>
             </div>
 
+            <div class="balloon-container">
+                <div id="balloon" class="balloon"></div>
+            </div>
+
+            <div class="score">Rayon: <span id="rayon">30</span>px</div>
+            
+            <button id="stopBtn" onclick="stopGame()" class="stop-button">⏹️ STOP</button>
+
             <div class="actions">
-                <button onclick="getScores()">🏆 Voir les scores</button>
-                <button onclick="resetGame()">🔄 Recommencer</button>
+                <button onclick="getScores()">🏆 Classement</button>
             </div>
         </div>
 
+        <div id="result" class="result-container"></div>
         <div id="scores" class="scores-container"></div>
     </div>
 
     <script src="script.js"></script>
 </body>
-                                </html>
+        </html>
