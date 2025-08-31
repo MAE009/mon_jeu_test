@@ -1,6 +1,9 @@
 from tinydb import TinyDB, Query
+import os
 
-db = TinyDB("db.json")
+# Utiliser un chemin absolu pour le fichier de base de données
+db_path = os.path.join(os.path.dirname(__file__), "db.json")
+db = TinyDB(db_path)
 
 def save_score(player, score):
     Player = Query()
