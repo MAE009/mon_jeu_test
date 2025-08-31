@@ -1,7 +1,8 @@
-// URL de l'API - à modifier avec votre URL Render
+// Auto-détection de l'URL de l'API
 const API_URL = "https://mon-jeu-test.onrender.com" + "/api";
 
 let currentPlayer = "";
+let currentScore = 0;
 
 async function startGame() {
     const playerInput = document.getElementById("player");
@@ -19,20 +20,23 @@ async function startGame() {
             body: JSON.stringify({player: currentPlayer})
         });
         
-        if (!response.ok) throw new Error("Erreur réseau");
+        if (!response.ok) throw new Error("Erreur de démarrage");
         
         const data = await response.json();
-        document.getElementById("game").style.display = "block";
-        document.getElementById("score").textContent = "0";
+        currentScore = 0;
+        updateScore();
         
     } catch (error) {
         console.error("Erreur:", error);
-        alert("Erreur de connexion au serveur");
+        alert("Impossible de démarrer le jeu");
     }
 }
 
 async function makeMove(move) {
-    if (!currentPlayer) return;
+    if (!currentPlayer) {
+        alert("Veuillez d'abord commencer une partie");
+        return;
+    }
 
     try {
         const response = await fetch(`${API_URL}/move`, {
@@ -41,20 +45,25 @@ async function makeMove(move) {
             body: JSON.stringify({player: currentPlayer, move})
         });
         
-        if (!response.ok) throw new Error("Erreur réseau");
+        if (!response.ok) throw new Error("Erreur de mouvement");
         
         const result = await response.json();
-        document.getElementById("score").textContent = result.score;
+        currentScore = result.score;
+        updateScore();
         
     } catch (error) {
         console.error("Erreur:", error);
     }
 }
 
+function updateScore() {
+    document.getElementById("score").textContent = currentScore;
+}
+
 async function getScores() {
     try {
         const response = await fetch(`${API_URL}/scores`);
-        if (!response.ok) throw new Error("Erreur réseau");
+        if (!response.ok) throw new Error("Erreur de récupération");
         
         const scores = await response.json();
         displayScores(scores);
@@ -73,7 +82,6 @@ function displayScores(scores) {
         return;
     }
     
-    // Trier par score décroissant
     scores.sort((a, b) => b.score - a.score);
     
     const ol = document.createElement("ol");
@@ -84,4 +92,10 @@ function displayScores(scores) {
     });
     
     scoresContainer.appendChild(ol);
-                                 }
+}
+
+function resetGame() {
+    currentScore = 0;
+    updateScore();
+    document.getElementById("scores").innerHTML = "";
+}
