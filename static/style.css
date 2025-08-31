@@ -1,20 +1,27 @@
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
     margin: 0;
     padding: 20px;
     min-height: 100vh;
-    color: white;
+    color: #2d3436;
     text-align: center;
 }
 
 .container {
     max-width: 600px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.95);
     padding: 30px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    color: #ff6b6b;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .player-section {
@@ -25,51 +32,86 @@ input, button {
     padding: 12px 20px;
     margin: 8px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 16px;
+    font-weight: bold;
 }
 
 input {
     width: 200px;
-    background: rgba(255, 255, 255, 0.9);
+    background: #f1f2f6;
+    border: 2px solid #dfe4ea;
 }
 
 button {
-    background: #ff6b6b;
+    background: #4ecdc4;
     color: white;
     cursor: pointer;
     transition: transform 0.2s, background 0.3s;
 }
 
 button:hover {
-    background: #ee5a52;
+    background: #45b7aa;
     transform: translateY(-2px);
 }
 
-.controls {
-    margin: 25px 0;
+.stop-button {
+    background: #ff6b6b;
+    font-size: 20px;
+    padding: 15px 30px;
 }
 
-.controls button {
-    font-size: 24px;
-    padding: 20px;
-    margin: 10px;
-    min-width: 80px;
+.stop-button:hover {
+    background: #ee5a52;
 }
 
 .game-container {
     margin: 20px 0;
 }
 
+.game-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.balloon-container {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.balloon {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle at 30% 30%, #ff6b6b, #ee5a52);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
 .score {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     margin: 20px 0;
-    color: #ffd700;
+    color: #2d3436;
+}
+
+.result-container {
+    background: #ffeaa7;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 .scores-container {
-    background: rgba(255, 255, 255, 0.1);
+    background: #f8f9fa;
     padding: 20px;
     border-radius: 10px;
     margin-top: 20px;
@@ -85,11 +127,14 @@ button:hover {
     margin-top: 20px;
 }
 
-.actions button {
-    background: #4ecdc4;
-    margin: 5px;
+.won {
+    color: #00b894;
 }
 
-.actions button:hover {
-    background: #45b7aa;
+.lost {
+    color: #ff6b6b;
 }
+
+.burst {
+    color: #e17055;
+    }
