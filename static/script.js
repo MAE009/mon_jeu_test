@@ -3,6 +3,7 @@ const API_URL = "https://mon-jeu-test.onrender.com" + "/api";
 let currentPlayer = "";
 let gameInterval = null;
 let currentBalloonSize = 30;
+let currentDifficulty = "";
 
 async function startGame() {
     const playerInput = document.getElementById("player");
@@ -25,8 +26,11 @@ async function startGame() {
         const data = await response.json();
         document.getElementById("game").style.display = "block";
         document.getElementById("tolerance").textContent = data.tolerance;
+        document.getElementById("difficulty").textContent = data.difficulty.toUpperCase();
+        document.getElementById("difficulty").style.color = getDifficultyColor(data.difficulty);
         
-        // Démarrer l'animation du ballon
+        currentDifficulty = data.difficulty;
+        currentBalloonSize = 30;
         startBalloonAnimation();
         
     } catch (error) {
@@ -35,30 +39,83 @@ async function startGame() {
     }
 }
 
+function getDifficultyColor(difficulty) {
+    const colors = {
+        "easy": "#00b894",
+        "medium": "#fdcb6e",
+        "hard": "#e17055",
+        "expert": "#d63031"
+    };
+    return colors[difficulty] || "#2d3436";
+}
+
 function startBalloonAnimation() {
     currentBalloonSize = 30;
     updateBalloonSize();
     
     if (gameInterval) clearInterval(gameInterval);
     
+    // Vitesse d'animation variable selon la difficulté
+    const animationSpeed = {
+        "easy": 100,
+        "medium": 80,
+        "hard": 60,
+        "expert": 40
+    }[currentDifficulty] || 100;
+    
     gameInterval = setInterval(async () => {
         try {
-            // Simuler le gonflement (le serveur calcule le vrai rayon)
-            currentBalloonSize += 0.5;
+            // Simulation plus réaliste du gonflement
+            let growthRate = 0.5;
+            if (currentDifficulty === "medium") growthRate = 0.7;
+            if (currentDifficulty === "hard") growthRate = 0.9;
+            if (currentDifficulty === "expert") growthRate = 1.2;
+            
+            // Variation aléatoire pour les niveaux difficiles
+            if (currentDifficulty === "expert" && Math.random() < 0.3) {
+                growthRate *= (0.7 + Math.random() * 0.6);
+            }
+            
+            currentBalloonSize += growthRate;
             updateBalloonSize();
             
             document.getElementById("rayon").textContent = Math.round(currentBalloonSize);
             
+            // Changement de couleur selon la taille
+            updateBalloonColor();
+            
         } catch (error) {
             console.error("Erreur:", error);
         }
-    }, 100);
+    }, animationSpeed);
 }
 
 function updateBalloonSize() {
     const balloon = document.getElementById("balloon");
-    balloon.style.width = `${currentBalloonSize}px`;
-    balloon.style.height = `${currentBalloonSize}px`;
+    const maxSize = 200;
+    const size = Math.min(currentBalloonSize, maxSize);
+    
+    balloon.style.width = `${size}px`;
+    balloon.style.height = `${size}px`;
+    
+    // Effet visuel de tension quand le ballon est grand
+    if (size > 120) {
+        balloon.style.boxShadow = "0 0 20px rgba(255, 0, 0, 0.5)";
+    } else {
+        balloon.style.boxShadow = "0 5px 15px rgba(0, 0, 0, 0.2)";
+    }
+}
+
+function updateBalloonColor() {
+    const balloon = document.getElementById("balloon");
+    const tension = Math.min(1, currentBalloonSize / 150);
+    
+    // Gradient qui devient plus rouge avec la tension
+    const red = Math.min(255, 255 * tension);
+    const green = Math.max(0, 255 * (1 - tension));
+    const blue = Math.max(0, 100 * (1 - tension));
+    
+    balloon.style.background = `radial-gradient(circle at 30% 30%, rgb(${red}, ${green}, ${blue}), rgb(${red * 0.8}, ${green * 0.8}, ${blue * 0.8}))`;
 }
 
 async function stopGame() {
@@ -91,54 +148,41 @@ function showResult(result) {
     
     if (result.status === "won") {
         resultDiv.innerHTML = `
-            <div class="won">🎉 VICTOIRE !</div>
-            <div>Score: ${result.score}/100</div>
+            <div class="won">🎉 VICTOIRE ! (${result.difficulty.toUpperCase()})</div>
+            <div>Score: <strong>${result.score}</strong> points</div>
+            <div>Précision: ${result.precision}%</div>
             <div>Rayon d'arrêt: ${result.rayon_arret}px</div>
-            <div>Intervalle cible: [${result.intervalle[0]}, ${result.intervalle[1]}]px</div>
+            <div>Cible: ${result.rayon_final}px ±${(result.intervalle[1] - result.intervalle[0])/2}px</div>
+            <div>Intervalle: [${result.intervalle[0]}, ${result.intervalle[1]}]px</div>
         `;
     } else if (result.status === "lost") {
         resultDiv.innerHTML = `
-            <div class="lost">😞 PERDU !</div>
+            <div class="lost">😞 PERDU ! (${result.difficulty.toUpperCase()})</div>
             <div>Rayon d'arrêt: ${result.rayon_arret}px</div>
-            <div>Intervalle cible: [${result.intervalle[0]}, ${result.intervalle[1]}]px</div>
+            <div>Hors intervalle: [${result.intervalle[0]}, ${result.intervalle[1]}]px</div>
+            <div>Cible: ${result.rayon_final}px</div>
         `;
     } else if (result.status === "burst") {
         resultDiv.innerHTML = `
-            <div class="burst">💥 BALLON ÉCLATÉ !</div>
-            <div>Le ballon a dépassé la tolérance maximale</div>
+            <div class="burst">💥 BALLON ÉCLATÉ ! (${result.difficulty.toUpperCase()})</div>
+            <div>Tolérance maximale dépassée</div>
         `;
     }
 }
 
-async function getScores() {
-    try {
-        const response = await fetch(`${API_URL}/scores`);
-        if (!response.ok) throw new Error("Erreur de récupération");
-        
-        const scores = await response.json();
-        displayScores(scores);
-        
-    } catch (error) {
-        console.error("Erreur:", error);
-    }
-}
-
-function displayScores(scores) {
-    const scoresContainer = document.getElementById("scores");
-    scoresContainer.innerHTML = "<h2>🏆 Classement</h2>";
-    
-    if (scores.length === 0) {
-        scoresContainer.innerHTML += "<p>Aucun score enregistré</p>";
-        return;
-    }
-    
-    const ol = document.createElement("ol");
-    scores.forEach((score, index) => {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${score.name}</strong>: ${score.score} points`;
-        if (index < 3) li.style.fontWeight = "bold";
-        ol.appendChild(li);
+// Ajouter un effet de vibration pour le bouton STOP
+function addVibrationEffect() {
+    const stopBtn = document.getElementById("stopBtn");
+    stopBtn.addEventListener('mouseover', () => {
+        if (currentDifficulty === "expert") {
+            stopBtn.style.animation = "vibration 0.1s infinite";
+        }
     });
     
-    scoresContainer.appendChild(ol);
-            }
+    stopBtn.addEventListener('mouseout', () => {
+        stopBtn.style.animation = "none";
+    });
+}
+
+// Appeler au chargement
+window.addEventListener('load', addVibrationEffect);
