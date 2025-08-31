@@ -1,13 +1,5 @@
-# Outils de build
-wheel==0.41.2
 setuptools==68.2.2
-
-# Framework
+wheel==0.42.0
 Flask==2.3.2
 flask-cors==3.0.10
-
-# Data (version allégée)
-pandas==1.5.3  # ou utilisez numpy seul
-
-# Database
 tinydb==4.7.0
