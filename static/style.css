@@ -137,4 +137,44 @@ button:hover {
 
 .burst {
     color: #e17055;
-    }
+}
+/* Ajouter ces styles */
+
+.difficulty-info {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+    padding: 8px 15px;
+    border-radius: 20px;
+    background: #f8f9fa;
+}
+
+.easy-diff { color: #00b894; }
+.medium-diff { color: #fdcb6e; }
+.hard-diff { color: #e17055; }
+.expert-diff { color: #d63031; }
+
+/* Animation de vibration pour le bouton STOP */
+@keyframes vibration {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    50% { transform: translateX(0); }
+    75% { transform: translateX(2px); }
+    100% { transform: translateX(0); }
+}
+
+/* Effet de pulsation pour le ballon */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.balloon {
+    animation: pulse 2s infinite;
+}
+
+/* Pour les niveaux experts, le ballon pulse plus vite */
+.expert .balloon {
+    animation: pulse 0.8s infinite;
+}
